@@ -4,6 +4,10 @@
 
 type Title = Title of string
 
+module Title =
+    let value (Title title) =
+        title
+
 type Status =
     | Todo
     | Doing
@@ -63,11 +67,38 @@ module Cli =
         let title = getTitle ()
         Api.addTask parent title
 
+    let printParent parent =
+        match parent with
+        | Task parent ->
+            parent.Title
+            |> Title.value
+            |> printfn "Tittel: %s"
+
+            let status =
+                match parent.Status with
+                | Todo -> "Todo"
+                | Doing -> "Doing"
+                | Done -> "Done"
+
+            printfn "Status: %s" status
+
+            parent.Children
+            |> List.map (fun task -> task.Title)
+            |> List.map Title.value
+            |> List.iter (printfn "%s")
+
+        | Root parent ->
+            parent.Children
+            |> List.map (fun task -> task.Title)
+            |> List.map Title.value
+            |> List.iter (printfn "%s")
+
 let root = Parent.Root {
     Children = []
 }
 
 let newRoot = Cli.addTask root
+Cli.printParent newRoot
 
 [<EntryPoint>]
 let main _ =
