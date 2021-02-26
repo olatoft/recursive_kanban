@@ -115,9 +115,8 @@ let root = Parent.Root {
     Children = []
 }
 
-let newRoot = Cli.addTask root
-Cli.printParent newRoot
-
 [<EntryPoint>]
 let main _ =
+    let newRoot = Cli.addTask root
+    Cli.printParent newRoot
     0
