@@ -45,6 +45,9 @@ module Api =
 
         newParent
 
+    let updateStatus task newStatus =
+        { task with Status = newStatus }
+
 // -------------
 // ---- CLI ----
 // -------------
