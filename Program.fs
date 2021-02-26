@@ -67,6 +67,13 @@ module Cli =
         let title = getTitle ()
         Api.addTask parent title
 
+    let printChildrenWithStatus children status =
+        children
+        |> List.filter (fun task -> task.Status = status)
+        |> List.map (fun task -> task.Title)
+        |> List.map Title.value
+        |> List.iter (printfn "    %s")
+
     let printParent parent =
         match parent with
         | Task parent ->
@@ -82,16 +89,24 @@ module Cli =
 
             printfn "Status: %s" status
 
-            parent.Children
-            |> List.map (fun task -> task.Title)
-            |> List.map Title.value
-            |> List.iter (printfn "%s")
+            printfn "Todo:"
+            printChildrenWithStatus parent.Children Todo
+
+            printfn "Doing:"
+            printChildrenWithStatus parent.Children Doing
+
+            printfn "Done:"
+            printChildrenWithStatus parent.Children Done
 
         | Root parent ->
-            parent.Children
-            |> List.map (fun task -> task.Title)
-            |> List.map Title.value
-            |> List.iter (printfn "%s")
+            printfn "Todo:"
+            printChildrenWithStatus parent.Children Todo
+
+            printfn "Doing:"
+            printChildrenWithStatus parent.Children Doing
+
+            printfn "Done:"
+            printChildrenWithStatus parent.Children Done
 
 let root = Parent.Root {
     Children = []
