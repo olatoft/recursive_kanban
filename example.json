@@ -1,0 +1,10 @@
+{
+  "children": [
+    {
+      "title": "Vask opp",
+      "status": "todo",
+      "parent": "root",
+      "children": []
+    }
+  ]
+}

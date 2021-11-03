@@ -28,9 +28,16 @@ and Task = {
     Children: Task list
 }
 
+type TaskDto = {
+    Title : string
+    Status : string
+    Parent : string
+    Children : TaskDto array
+}
+
 module Api =
     let addTask parent title =
-        let task = {
+        let task : Task = {
             Title = title
             Status = Todo
             Parent = parent
@@ -49,8 +56,12 @@ module Api =
 
         newParent
 
-    let updateStatus task newStatus =
+    let updateStatus (task : Task) newStatus =
         { task with Status = newStatus }
+
+//module IO =
+//    let fileToDto filePath =
+
 
 // -------------
 // ---- CLI ----
@@ -70,7 +81,7 @@ module Cli =
         let title = getTitle ()
         Api.addTask parent title
 
-    let printChildrenWithStatus children status =
+    let printChildrenWithStatus (children : Task list) status =
         children
         |> List.filter (fun task -> task.Status = status)
         |> List.map (fun task -> task.Title)
@@ -111,6 +122,43 @@ module Cli =
             printfn "Done:"
             printChildrenWithStatus parent.Children Done
 
+    let selectChild (parent : Parent) =
+        let action index (child : Task) =
+            child.Title
+            |> Title.value
+            |> printfn "%d: %s" index
+            
+        match parent with
+        | Task parent ->
+            parent.Children
+            |> List.iteri action
+        | Root parent ->
+            parent.Children
+            |> List.iteri action
+
+        let index =
+            getUserInput "Velg barn: "
+            |> int
+
+        match parent with
+        | Task parent ->
+            parent.Children
+            |> List.item index
+        | Root parent ->
+            parent.Children
+            |> List.item index
+
+    let rec getEvent () =
+        let event = getUserInput "Kva vil du gjere? 1: Gå til barne-oppgåve. 2: Lag ny oppgåve. Valg: "
+
+        match event with
+        | "1" -> selectChild
+        | "2" -> addTask
+        | _ -> getEvent ()
+
+    let run parent =
+        printParent parent
+
 let root = Parent.Root {
     Children = []
 }
@@ -118,5 +166,6 @@ let root = Parent.Root {
 [<EntryPoint>]
 let main _ =
     let newRoot = Cli.addTask root
-    Cli.printParent newRoot
+    // Cli.printParent newRoot
+    Cli.run newRoot
     0
